@@ -2,3 +2,5 @@ baseURL = 'https://jjjjjjy.github.io/'
 languageCode = 'zh-cn'
 title = '日日是好日'
 theme = 'hugo-theme-stack'
+
+contentDir = "content/publish"
