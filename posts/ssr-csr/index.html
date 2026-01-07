@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="zh-cn" dir="ltr">
+    <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="CSR（Client-Side Rendering）: 客户端渲染 服务器主要负责提供静态的HTML文件（可能包含一些基本的HTML结构和JavaScript脚本），而真正的页面渲染工作则完全由客户端的浏览器来完成。这意味着页面内容是在用户的浏览器上动态生成的。\n优点：\n响应速度快：一旦HTML文件加载完成，浏览器就可以开始渲染页面，而不需要等待服务器返回完整的渲染结果。 动态性强：由于页面渲染在客户端进行，因此可以方便地实现各种动态交互效果。 前端部署简单：只需要一个静态服务即可部署前端代码，降低了部署成本。\n缺点：\n首屏加载时间长：由于需要加载整个JavaScript包，可能导致首屏加载时间较长，特别是对于复杂的单页应用（SPA）。 不利于SEO：搜索引擎爬虫可能无法很好地解析由JavaScript动态生成的页面内容，导致SEO效果较差。 白屏时间：在JavaScript代码加载和执行期间，用户可能会看到空白的页面，即所谓的“白屏时间”。\nSSR（Server-Side Rendering）: 服务端渲染 SSR 的流程一定要熟：构建 → 请求 → 服务端渲染 → 注水 → 客户端接管\nSSR 是一种在服务器端完成页面渲染的技术。 在SSR下，服务器端接收到客户端的请求后，会根据 客户端 请求的数据 以及 模板文件 生成完整的HTML页面。然后将这个完整的HTML页面直接发送给客户端。 这样，用户可以直接看到完成的内容，无需等待JavaScript加载和执行。 SSR 模板文件 👉 SSR 本质上是生成一段 HTML 字符串， 然后插入到 SSR 模板文件 中。\n｜模板文件: SSR 模板 = 静态 HTML 容器 (纯HTML字符串) + 插槽占位\nSSR 模板文件 不会渲染，而是“接收渲染结果”的容器。 优点： 使用SSR模板文件的好处是无需每次构建整个页面，只需要每次将数据插入到slot中，从而渲染插槽即可。\nSSR模板文件 不会被服务端构建器编译（build/compile） 构建器（如 Vite、Webpack、Rollup）并不会处理这个 index.html 模板（它可能会被拷贝，但不会编译、分析依赖、生成 bundle）。 SSR模板文件 不会被客户端解析模板语法而渲染（render） SSR模板文件 不会被 像 Vue/React/San 这样的框架渲染，因为浏览器只会看到它已经被替换好的 HTML，根本不会看到插槽占位 SSR模版只是 在 node 读取模版时，使用JS 将 插槽占位 替换成 服务端解析客户端获得的数据 与slot的区别:\n">
+<title>CSR和SSR</title>
+
+<link rel='canonical' href='http://localhost:1313/posts/ssr-csr/'>
+
+<link rel="stylesheet" href="/scss/style.min.946cca6c6259ef94ac55abfae7c7bf3291ea3ed5eea17ef77500b257217c6710.css"><meta property='og:title' content="CSR和SSR">
+<meta property='og:description' content="CSR（Client-Side Rendering）: 客户端渲染 服务器主要负责提供静态的HTML文件（可能包含一些基本的HTML结构和JavaScript脚本），而真正的页面渲染工作则完全由客户端的浏览器来完成。这意味着页面内容是在用户的浏览器上动态生成的。\n优点：\n响应速度快：一旦HTML文件加载完成，浏览器就可以开始渲染页面，而不需要等待服务器返回完整的渲染结果。 动态性强：由于页面渲染在客户端进行，因此可以方便地实现各种动态交互效果。 前端部署简单：只需要一个静态服务即可部署前端代码，降低了部署成本。\n缺点：\n首屏加载时间长：由于需要加载整个JavaScript包，可能导致首屏加载时间较长，特别是对于复杂的单页应用（SPA）。 不利于SEO：搜索引擎爬虫可能无法很好地解析由JavaScript动态生成的页面内容，导致SEO效果较差。 白屏时间：在JavaScript代码加载和执行期间，用户可能会看到空白的页面，即所谓的“白屏时间”。\nSSR（Server-Side Rendering）: 服务端渲染 SSR 的流程一定要熟：构建 → 请求 → 服务端渲染 → 注水 → 客户端接管\nSSR 是一种在服务器端完成页面渲染的技术。 在SSR下，服务器端接收到客户端的请求后，会根据 客户端 请求的数据 以及 模板文件 生成完整的HTML页面。然后将这个完整的HTML页面直接发送给客户端。 这样，用户可以直接看到完成的内容，无需等待JavaScript加载和执行。 SSR 模板文件 👉 SSR 本质上是生成一段 HTML 字符串， 然后插入到 SSR 模板文件 中。\n｜模板文件: SSR 模板 = 静态 HTML 容器 (纯HTML字符串) + 插槽占位\nSSR 模板文件 不会渲染，而是“接收渲染结果”的容器。 优点： 使用SSR模板文件的好处是无需每次构建整个页面，只需要每次将数据插入到slot中，从而渲染插槽即可。\nSSR模板文件 不会被服务端构建器编译（build/compile） 构建器（如 Vite、Webpack、Rollup）并不会处理这个 index.html 模板（它可能会被拷贝，但不会编译、分析依赖、生成 bundle）。 SSR模板文件 不会被客户端解析模板语法而渲染（render） SSR模板文件 不会被 像 Vue/React/San 这样的框架渲染，因为浏览器只会看到它已经被替换好的 HTML，根本不会看到插槽占位 SSR模版只是 在 node 读取模版时，使用JS 将 插槽占位 替换成 服务端解析客户端获得的数据 与slot的区别:\n">
+<meta property='og:url' content='http://localhost:1313/posts/ssr-csr/'>
+<meta property='og:site_name' content='日日是好日'>
+<meta property='og:type' content='article'><meta property='article:section' content='Posts' /><meta property='article:published_time' content='2025-07-20T16:16:27&#43;08:00'/><meta property='article:modified_time' content='2025-07-20T16:16:27&#43;08:00'/>
+<meta name="twitter:title" content="CSR和SSR">
+<meta name="twitter:description" content="CSR（Client-Side Rendering）: 客户端渲染 服务器主要负责提供静态的HTML文件（可能包含一些基本的HTML结构和JavaScript脚本），而真正的页面渲染工作则完全由客户端的浏览器来完成。这意味着页面内容是在用户的浏览器上动态生成的。\n优点：\n响应速度快：一旦HTML文件加载完成，浏览器就可以开始渲染页面，而不需要等待服务器返回完整的渲染结果。 动态性强：由于页面渲染在客户端进行，因此可以方便地实现各种动态交互效果。 前端部署简单：只需要一个静态服务即可部署前端代码，降低了部署成本。\n缺点：\n首屏加载时间长：由于需要加载整个JavaScript包，可能导致首屏加载时间较长，特别是对于复杂的单页应用（SPA）。 不利于SEO：搜索引擎爬虫可能无法很好地解析由JavaScript动态生成的页面内容，导致SEO效果较差。 白屏时间：在JavaScript代码加载和执行期间，用户可能会看到空白的页面，即所谓的“白屏时间”。\nSSR（Server-Side Rendering）: 服务端渲染 SSR 的流程一定要熟：构建 → 请求 → 服务端渲染 → 注水 → 客户端接管\nSSR 是一种在服务器端完成页面渲染的技术。 在SSR下，服务器端接收到客户端的请求后，会根据 客户端 请求的数据 以及 模板文件 生成完整的HTML页面。然后将这个完整的HTML页面直接发送给客户端。 这样，用户可以直接看到完成的内容，无需等待JavaScript加载和执行。 SSR 模板文件 👉 SSR 本质上是生成一段 HTML 字符串， 然后插入到 SSR 模板文件 中。\n｜模板文件: SSR 模板 = 静态 HTML 容器 (纯HTML字符串) + 插槽占位\nSSR 模板文件 不会渲染，而是“接收渲染结果”的容器。 优点： 使用SSR模板文件的好处是无需每次构建整个页面，只需要每次将数据插入到slot中，从而渲染插槽即可。\nSSR模板文件 不会被服务端构建器编译（build/compile） 构建器（如 Vite、Webpack、Rollup）并不会处理这个 index.html 模板（它可能会被拷贝，但不会编译、分析依赖、生成 bundle）。 SSR模板文件 不会被客户端解析模板语法而渲染（render） SSR模板文件 不会被 像 Vue/React/San 这样的框架渲染，因为浏览器只会看到它已经被替换好的 HTML，根本不会看到插槽占位 SSR模版只是 在 node 读取模版时，使用JS 将 插槽占位 替换成 服务端解析客户端获得的数据 与slot的区别:\n">
+    </head>
+    <body class="
+    article-page
+    ">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column compact"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="Toggle Menu">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/">
+                
+                    
+                    
+                    
+                        
+                        <img src="/img/avatar_hu_f509edb42ecc0ebd.png" width="1080"
+                            height="1080" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+            </figure>
+            
+        
+        
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/">日日是好日</a></h1>
+            <h2 class="site-description"></h2>
+        </div>
+    </header><ol class="menu" id="main-menu">
+        
+        
+        <li class="menu-bottom-section">
+            <ol class="menu">
+
+                
+                    <li id="dark-mode-toggle">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="8" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="16" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <span>Dark Mode</span>
+                    </li>
+                
+            </ol>
+        </li>
+    </ol>
+</aside>
+
+    
+
+            <main class="main full-width">
+    <article class="main-article">
+    <header class="article-header">
+
+    <div class="article-details">
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="/posts/ssr-csr/">CSR和SSR</a>
+        </h2>
+    
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">Jul 20, 2025</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    2 minute read
+                </time>
+            </div>
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+    <section class="article-content">
+    
+    
+    <h1 id="csrclient-side-rendering-客户端渲染">CSR（Client-Side Rendering）: 客户端渲染
+</h1><p>服务器主要负责提供静态的HTML文件（可能包含一些基本的HTML结构和JavaScript脚本），而真正的页面渲染工作则完全由客户端的浏览器来完成。这意味着页面内容是在用户的浏览器上动态生成的。</p>
+<p>优点：</p>
+<p>响应速度快：一旦HTML文件加载完成，浏览器就可以开始渲染页面，而不需要等待服务器返回完整的渲染结果。
+动态性强：由于页面渲染在客户端进行，因此可以方便地实现各种动态交互效果。
+前端部署简单：只需要一个静态服务即可部署前端代码，降低了部署成本。</p>
+<p>缺点：</p>
+<p>首屏加载时间长：由于需要加载整个JavaScript包，可能导致首屏加载时间较长，特别是对于复杂的单页应用（SPA）。
+不利于SEO：搜索引擎爬虫可能无法很好地解析由JavaScript动态生成的页面内容，导致SEO效果较差。
+白屏时间：在JavaScript代码加载和执行期间，用户可能会看到空白的页面，即所谓的“白屏时间”。</p>
+<h1 id="ssrserver-side-rendering-服务端渲染">SSR（Server-Side Rendering）: 服务端渲染
+</h1><p><strong>SSR 的流程一定要熟：构建 → 请求 → 服务端渲染 → 注水 → 客户端接管</strong></p>
+<ul>
+<li>SSR 是一种在服务器端完成页面渲染的技术。</li>
+<li>在SSR下，服务器端接收到客户端的请求后，会根据 <strong>客户端 请求的数据</strong> 以及 <strong>模板文件</strong> 生成完整的HTML页面。然后将这个完整的HTML页面直接发送给客户端。</li>
+<li>这样，用户可以直接看到完成的内容，无需等待JavaScript加载和执行。</li>
+</ul>
+<h2 id="ssr-模板文件">SSR 模板文件
+</h2><p>👉 SSR 本质上是生成一段 HTML 字符串， 然后插入到 SSR 模板文件 中。</p>
+<p>｜<code>模板文件</code>: SSR 模板 = 静态 HTML 容器 (纯HTML字符串) + 插槽占位</p>
+<ul>
+<li>SSR 模板文件 不会渲染，而是“接收渲染结果”的容器。</li>
+</ul>
+<p><strong>优点：</strong> 使用SSR模板文件的好处是无需每次构建整个页面，只需要每次将数据插入到slot中，从而渲染插槽即可。</p>
+<ul>
+<li>SSR模板文件 <strong>不会被</strong>服务端构建器<strong>编译</strong>（build/compile）
+<ul>
+<li>构建器（如 Vite、Webpack、Rollup）并不会处理这个 index.html 模板（它可能会被拷贝，但不会编译、分析依赖、生成 bundle）。</li>
+</ul>
+</li>
+<li>SSR模板文件 <strong>不会被</strong>客户端解析模板语法而<strong>渲染</strong>（render）
+<ul>
+<li>SSR模板文件 不会被 像 Vue/React/San 这样的框架渲染，因为浏览器只会看到它已经被替换好的 HTML，根本不会看到插槽占位</li>
+</ul>
+</li>
+<li>SSR模版只是 在 node 读取模版时，使用JS 将 插槽占位 替换成 服务端解析客户端获得的数据</li>
+</ul>
+<p><strong>与slot的区别:</strong></p>
+<ul>
+<li>SSR 插槽 = 等待“某个组件渲染结果”的静态 HTML 占位符</li>
+<li>组件插槽 = 等待“其他组件传入内容”的动态子组件插入点</li>
+</ul>
+<h2 id="ssr-反解--hydration注水机制">SSR 反解 —— Hydration（注水）机制
+</h2><ul>
+<li>
+<p>🌟 既然SSR是在服务端渲染一个HTML的过程，那么客户端是如何接管运行的呢？如何执行页面上的JS逻辑呢？</p>
+</li>
+<li>
+<p>这就涉及到 SSR反解，即挂载JS的过程。 又称 Hydration（注水）。</p>
+</li>
+<li>
+<p>SSR 注水时的 JS 逻辑，是浏览器从 HTML 中加载 script 脚本文件后执行的，而注水的入口逻辑 就是 JS 应用接管 DOM 的起点。</p>
+</li>
+</ul>
+<p><strong>SSR 的“反解”就是客户端的 Hydration（注水）过程，即将 SSR 渲染好的 HTML，挂上 JS 逻辑，变成真正可交互的应用。</strong></p>
+<p>🔥 注水机制的 <strong>本质</strong> 是在 <strong>已有DOM上挂载JS逻辑</strong>。</p>
+<p>❌ 这里需要区分CSR。 Hydration 是 SSR 独有的步骤，纯 CSR 是 没有 Hydration过程的，因为CSR 不会预先接管HTML，而是自己从 JS 渲染 DOM。</p>
+<ul>
+<li>
+<p>React 的 hydrateRoot()、Vue 的 app.mount()、san的 myComponent.attach(el, { ssr: true }) 都是注水入口。</p>
+</li>
+<li>
+<p>但是 有的时候 我们也会在 CSR 项目里看到下面这种代码：</p>
+<pre tabindex="0"><code>const app = createApp(App); 
+app.mount(&#39;#app&#39;);
+</code></pre></li>
+<li>
+<p>但这其实不是注水，这里 #app 是空的，App 是从 0 渲染出来的。只是 API 长得像 SSR 的注水 mount()，但它做的是“创建 DOM”，不是“复用已有 DOM”。</p>
+</li>
+<li>
+<p>SSR 的 HTML 是“服务器生成的”，DOM是在服务端生成的，Hydration 是“接管”， 只需要在 DOM上挂载，而无需重新创建DOM；</p>
+</li>
+<li>
+<p>在CSR中，服务器返回一份 空的 HTML， CSR 的 HTML 是“客户端生成的”， 需要 直接从 0 开始创建DOM，没有可接管的内容。</p>
+</li>
+</ul>
+<h3 id="注水的作用">注水的作用
+</h3><ul>
+<li>注水不是重新渲染，而是对比已有 HTML 和虚拟 DOM，找到匹配点， 然后 <strong>“在已有 DOM 上挂载 JS 逻辑”</strong> ；这样可以省掉客户端从 0 渲染，页面加载速度更快。</li>
+</ul>
+<h3 id="注水顺序">注水顺序：
+</h3><ol>
+<li>
+<p>【初始化客户端数据】 创建响应式状态 或 store 状态 【还没有对比DOM结构】</p>
+<ul>
+<li>执行组件的 initData() 或 data: { &hellip; }</li>
+<li>恢复 Vue 的 data()，React 的 useState()、Redux 状态等</li>
+<li>或读取 window.<strong>INITIAL_DATA</strong> 来还原服务端数据</li>
+</ul>
+</li>
+<li>
+<p>【对比DOM】</p>
+<ul>
+<li>对比 客户端 JS 渲染出来的“虚拟 DOM” 和 页面中已经由服务端生成并送到客户端的“真实 DOM” （不一致可能会触发警告或 DOM patch）</li>
+<li>如果不一致，框架会：
+<ul>
+<li>报 warning（如 Vue 的 hydration mismatch）</li>
+<li>或直接 patch DOM（丢掉 SSR 性能）</li>
+</ul>
+</li>
+<li>🔁 这是为了让“JS 状态”与“页面结构”达成一致。</li>
+<li>⚠️ 特别注意：不是所有属性都“必须对比”
+<ul>
+<li>一些如 data-* 属性、非交互性属性，或者某些 aria-* 辅助属性，框架可能会有容忍度。</li>
+<li>但关键属性（如：id、class、key、绑定属性、样式、children 顺序）都必须对比且一致，否则注水可能失败。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p>【挂载事件监听器】</p>
+</li>
+</ol>
+<h2 id="ssr的优缺点">SSR的优缺点
+</h2><ul>
+<li>
+<p>优点：</p>
+<ul>
+<li>首屏加载速度快：由于服务器已经生成了完整的HTML页面，因此客户端可以直接显示这个页面，无需等待JavaScript加载和执行。</li>
+<li>SEO友好：搜索引擎爬虫可以很好地解析由服务器生成的HTML页面内容，有利于SEO优化。</li>
+<li>适合复杂页面：对于包含大量数据、需要复杂计算的页面，SSR可以更好地处理并减少客户端的负载。</li>
+</ul>
+</li>
+<li>
+<p>缺点：</p>
+<ul>
+<li>服务器压力大：对于每个请求，服务器都需要重新渲染页面，这可能导致服务器压力过大。</li>
+<li>开发限制：SSR要求开发者在编写Vue组件时，需要考虑到服务器端和客户端环境的差异，不能过度依赖客户端环境。</li>
+<li>调试困难：SSR的调试过程相对复杂，需要同时考虑到服务器端和客户端的日志和错误信息。</li>
+</ul>
+</li>
+</ul>
+<h2 id="-diff-注水-vs-挂载-vs-重新渲染">🚧 Diff 注水 vs 挂载 vs 重新渲染
+</h2><div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th>类型</th>
+          <th>动作</th>
+          <th>会创建 DOM？</th>
+          <th>会挂载事件？</th>
+          <th>用在哪</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>SSR</td>
+          <td>服务器渲染HTML</td>
+          <td>✅</td>
+          <td>❌</td>
+          <td>首屏</td>
+      </tr>
+      <tr>
+          <td>Hydration注水</td>
+          <td>接管 HTML</td>
+          <td>❌</td>
+          <td>✅</td>
+          <td>首屏</td>
+      </tr>
+      <tr>
+          <td>CSR 挂载</td>
+          <td>浏览器全量渲染</td>
+          <td>✅</td>
+          <td>✅</td>
+          <td>二次跳转、非首屏</td>
+      </tr>
+  </tbody>
+</table></div>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+
+    </footer>
+
+
+    
+</article>
+
+    
+
+    
+
+     
+    
+        
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+        2025 日日是好日
+    </section>
+    
+    <section class="powerby">
+        Built with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> <br />
+        Theme <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.30.0">Stack</a></b> designed by <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a>
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
+            >
+
+            </main>
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
+                
+                >
+            </script><script type="text/javascript" src="/ts/main.93aa6d2ec3513f90ecad566a5f6086433ee5229113309aa851976f46d821220d.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>
