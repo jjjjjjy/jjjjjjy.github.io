@@ -1,8 +1,22 @@
-+++
-date = '2026-01-07T11:33:39+08:00'
-draft = false
-title = 'Vite'
-+++
+---
+title: "Vite"
+date: 2026-02-28T10:57:05+08:00
+draft: true
+
+# 访问路径（可选，不写则自动生成）
+slug: "vite"
+
+# 分类（建议 1～2 个）
+categories:
+  - 技术笔记
+
+# 标签（可多个）
+tags:
+  - 前端
+
+# 列表页摘要（hugo-theme-stack 会优先使用）
+summary: ""
+---
 
 # Vite 介绍
 * Vite 发音 /viːt/
