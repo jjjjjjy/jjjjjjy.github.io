@@ -17,3 +17,9 @@ hugo server -D
 
 5. 创建博客文章
 hugo new posts/my-first-post.md
+
+
+other 删除public重新生成
+1. hugo --minify
+2. rm -rf public
+3. hugo --minify
