@@ -4,7 +4,7 @@ date: 2026-02-28T10:34:36+08:00
 draft: false
 
 # 访问路径（可选，不写则自动生成）
-slug: "my-first-post"
+slug: "closure"
 
 # 分类（建议 1～2 个）
 categories:
