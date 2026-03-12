@@ -1,6 +1,5 @@
 ---
-title: "Build Tools"
-description: "构建工具相关技术总结"
+title: "浏览器"
 ---
 
 欢迎来到我的博客！

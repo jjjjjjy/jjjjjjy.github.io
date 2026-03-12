@@ -1,6 +1,6 @@
 ---
-title: "Build Tools"
-description: "构建工具相关技术总结"
+title: "ai相关学习"
+description: "ai相关学习"
 ---
 
 欢迎来到我的博客！
