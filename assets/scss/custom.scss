@@ -7,16 +7,17 @@ body {
     "FangSong",
     "Times New Roman",
     "Noto Serif SC",
-    serif;
+    serif !important;
 }
 
 /* 标题 */
 h1, h2, h3, h4, h5, h6 {
   font-family:
+    "STKaiti"
     "Times New Roman",
     "STKaiti",
     "KaiTi",
-    serif;
+    serif !important;
 }
 
 /* 代码字体 */
@@ -24,5 +25,5 @@ code, pre {
   font-family:
     "JetBrains Mono",
     "Fira Code",
-    monospace;
+    monospace !important;
 }
