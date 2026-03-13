@@ -1,5 +1,5 @@
 /* 全局字体 */
-body {
+body, p {
   font-family:
     "STKaiti",
     "KaiTi",
@@ -26,4 +26,8 @@ code, pre {
     "JetBrains Mono",
     "Fira Code",
     monospace !important;
+}
+
+.article-content>p {
+  margin: 4px 0 !important;
 }
